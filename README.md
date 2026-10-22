@@ -13,11 +13,9 @@ Projeto desenvolvido para a disciplina **Arquitetura Orientada a Serviço (SOA)*
 
 | Nome completo | RM |
 |---|---|
-| Henrique Sanches | RM557959 |
 | João Pedro Kraide Máximo | RM563166 |
-| Douglas dos Santos Melo | RM556439 |
 | Nicolas Caciolato Reis | RM556506 |
-| Matheus Marcelino Dantas da Silva | RM556332 |
+
 
 ## Objetivo
 
