@@ -1,0 +1,198 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CP5 SOA - API de Pedidos",
+    "description": "API REST simples para criação e consulta de pedidos, com persistência em memória.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pedidos": {
+      "post": {
+        "summary": "Criar pedido",
+        "operationId": "criar_pedido_pedidos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PedidoEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Pedido criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PedidoSaida"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos"
+          }
+        }
+      }
+    },
+    "/pedidos/{pedido_id}": {
+      "get": {
+        "summary": "Consultar pedido por identificador",
+        "operationId": "consultar_pedido_pedidos__pedido_id__get",
+        "parameters": [
+          {
+            "name": "pedido_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Pedido Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PedidoSaida"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespostaErro"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Identificador inválido"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PedidoEntrada": {
+        "properties": {
+          "cliente": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Cliente",
+            "description": "Nome ou identificação do cliente",
+            "examples": [
+              "Maria Silva"
+            ]
+          },
+          "descricao": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Descricao",
+            "description": "Descrição do pedido",
+            "examples": [
+              "Teclado mecânico"
+            ]
+          },
+          "valor": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Valor",
+            "description": "Valor do pedido, maior que zero",
+            "examples": [
+              249.9
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "cliente",
+          "descricao",
+          "valor"
+        ],
+        "title": "PedidoEntrada"
+      },
+      "PedidoSaida": {
+        "properties": {
+          "cliente": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Cliente",
+            "description": "Nome ou identificação do cliente",
+            "examples": [
+              "Maria Silva"
+            ]
+          },
+          "descricao": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Descricao",
+            "description": "Descrição do pedido",
+            "examples": [
+              "Teclado mecânico"
+            ]
+          },
+          "valor": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Valor",
+            "description": "Valor do pedido, maior que zero",
+            "examples": [
+              249.9
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Identificador único do pedido"
+          },
+          "status": {
+            "type": "string",
+            "const": "CRIADO",
+            "title": "Status",
+            "description": "Situação inicial do pedido",
+            "default": "CRIADO"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cliente",
+          "descricao",
+          "valor",
+          "id"
+        ],
+        "title": "PedidoSaida"
+      },
+      "RespostaErro": {
+        "properties": {
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "examples": [
+              "Pedido não encontrado."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "RespostaErro"
+      }
+    }
+  }
+}

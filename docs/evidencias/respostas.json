@@ -1,0 +1,29 @@
+{
+  "POST /pedidos": {
+    "httpStatus": 201,
+    "json": {
+      "cliente": "Maria Silva",
+      "descricao": "Teclado mecânico",
+      "valor": 249.9,
+      "id": "ab57e469-70cd-40f1-a940-2fc017e27045",
+      "status": "CRIADO"
+    },
+    "location": "/pedidos/ab57e469-70cd-40f1-a940-2fc017e27045"
+  },
+  "GET /pedidos/{pedido_id}": {
+    "httpStatus": 200,
+    "json": {
+      "cliente": "Maria Silva",
+      "descricao": "Teclado mecânico",
+      "valor": 249.9,
+      "id": "ab57e469-70cd-40f1-a940-2fc017e27045",
+      "status": "CRIADO"
+    }
+  },
+  "GET /pedidos/{pedido_id} inexistente": {
+    "httpStatus": 404,
+    "json": {
+      "detail": "Pedido não encontrado."
+    }
+  }
+}
