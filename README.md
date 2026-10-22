@@ -1,91 +1,134 @@
 # CP5 — SOA | API REST de Pedidos
 
-Projeto da disciplina **Arquitetura Orientada a Serviço (SOA)** da FIAP — turma **3ESPY**, 2º semestre de 2026. Atividade CP5 de 21/10/2026, proposta pela Profa. Damiana Costa.
+Projeto desenvolvido para a disciplina **Arquitetura Orientada a Serviço (SOA)** da FIAP.
+
+**Turma:** 3ESPY  
+**Semestre:** 2º semestre de 2026  
+**Professora:** Damiana Costa  
+**Avaliação:** Checkpoint 5 — 21/10/2026
+
+---
 
 ## Integrantes
 
 | Nome completo | RM |
-| --- | --- |
+|---|---|
 | Henrique Sanches | RM557959 |
 | João Pedro Kraide Máximo | RM563166 |
 | Douglas dos Santos Melo | RM556439 |
-| Nicolas Caciolato reis | RM556506 |
+| Nicolas Caciolato Reis | RM556506 |
 | Matheus Marcelino Dantas da Silva | RM556332 |
 
-## Objetivo e escopo
+## Objetivo
 
-Disponibilizar uma API REST para **criar pedidos** e **consultar pedidos pelo identificador**, de acordo com o enunciado do CP5. Cada pedido contém identificador único (UUID), cliente, descrição, valor e status `CRIADO`.
+Desenvolver uma API REST para gerenciamento de pedidos de uma empresa de comércio eletrônico, permitindo criar pedidos e consultá-los por identificador.
 
-- **Persistência:** dicionário em memória (sem banco de dados externo).
-- **Formato:** JSON nas requisições e respostas.
-- **Retornos:** `201` para criação, `200` para consulta, `404` para pedido inexistente e `422` para dados inválidos.
-- **Sem autenticação, mensageria ou CRUD extra**, conforme o escopo solicitado.
+Cada pedido possui:
 
-> **Atenção:** os pedidos armazenados são perdidos quando o servidor é reiniciado. A aplicação foi construída para executar como um único processo, pois a persistência é local à memória do processo.
+- Identificador único (UUID)
+- Nome do cliente
+- Descrição do pedido
+- Valor do pedido
+- Status inicial `CRIADO`
 
-## Tecnologias
+A aplicação utiliza armazenamento em memória, sem necessidade de banco de dados externo.
 
-- Python **3.10+**
-- FastAPI e Pydantic: API, validações e documentação OpenAPI
-- Uvicorn: servidor HTTP
-- Pytest + HTTPX / TestClient: testes automatizados
-- Logging padrão do Python: logs estruturados em JSON
+## Tecnologias utilizadas
 
-## Como executar
+- **Python 3.10+** — Linguagem de programação
+- **FastAPI** — Desenvolvimento da API REST
+- **Pydantic** — Validação dos dados
+- **Uvicorn** — Servidor HTTP
+- **Pytest** — Testes automatizados
+- **HTTPX** — Cliente HTTP para testes
+- **OpenAPI / Swagger** — Documentação da API
+- **Logging** — Logs estruturados em JSON
 
-Na pasta raiz do projeto:
+## Como executar o projeto
+
+### 1. Criar o ambiente virtual
 
 ```bash
 python -m venv .venv
 ```
 
-Ative o ambiente virtual:
+### 2. Ativar o ambiente virtual
 
-**Windows (PowerShell)**
+Windows (CMD):
+
+```cmd
+.venv\Scripts\activate.bat
+```
+
+Windows (PowerShell):
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-**Linux/macOS**
+Linux/macOS:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Instale as dependências e inicie a API:
+### 3. Instalar as dependências
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+### 4. Iniciar a aplicação
+
+```bash
 python -m uvicorn app.main:app --reload
 ```
 
-Acesse:
+A aplicação estará disponível em:
 
-- **Swagger UI:** http://127.0.0.1:8000/docs
-- **OpenAPI em JSON (dinâmico):** http://127.0.0.1:8000/openapi.json
-- **Especificação OpenAPI versionada:** [`docs/openapi.json`](docs/openapi.json)
+**http://127.0.0.1:8000**
 
-## Endpoints
+Documentação Swagger:
 
-| Operação | Método e rota | Dados de entrada | Respostas principais |
-| --- | --- | --- | --- |
-| Criar um pedido | `POST /pedidos` | Corpo JSON com `cliente`, `descricao`, `valor` | `201 Created`, `422 Unprocessable Entity` |
-| Consultar pelo ID | `GET /pedidos/{pedido_id}` | UUID na URL | `200 OK`, `404 Not Found`, `422 Unprocessable Entity` |
+**http://127.0.0.1:8000/docs**
 
-O corpo JSON de criação exige `cliente` e `descricao` com texto não vazio e `valor` numérico maior que zero. O servidor atribui automaticamente o UUID e o status `CRIADO`. A criação também retorna o cabeçalho `Location` apontando para o pedido; ambas as operações retornam `X-Request-ID` para identificação da requisição nos logs.
+Especificação OpenAPI:
 
-## Exemplos de requisição e resposta
+**http://127.0.0.1:8000/openapi.json**
 
-### 1. Criar pedido
+O projeto também possui uma especificação versionada em `docs/openapi.json`.
 
-```bash
-curl -i -X POST "http://127.0.0.1:8000/pedidos" \
-  -H "Content-Type: application/json" \
-  -d '{"cliente":"Maria Silva","descricao":"Teclado mecânico","valor":249.90}'
+---
+
+## Endpoints da API
+
+| Método | Endpoint | Descrição | Status |
+|---|---|---|---|
+| POST | `/pedidos` | Criar um pedido | 201 |
+| GET | `/pedidos/{pedido_id}` | Consultar pedido por ID | 200 |
+| GET | `/pedidos/{pedido_id}` | Pedido inexistente | 404 |
+| POST | `/pedidos` | Dados inválidos | 422 |
+
+### Criar um pedido
+
+**Requisição:**
+
+```http
+POST /pedidos
+Content-Type: application/json
 ```
 
-**HTTP 201 — Exemplo real de resposta da execução de evidência:**
+**Corpo JSON:**
+
+```json
+{
+  "cliente": "Maria Silva",
+  "descricao": "Teclado mecânico",
+  "valor": 249.90
+}
+```
+
+**Resposta — HTTP 201 Created:**
 
 ```json
 {
@@ -97,19 +140,41 @@ curl -i -X POST "http://127.0.0.1:8000/pedidos" \
 }
 ```
 
-O identificador muda em cada criação porque é gerado com UUID v4.
+O identificador é gerado automaticamente utilizando UUID v4.
 
-### 2. Consultar pedido
+O valor precisa ser maior que zero, e os campos de texto não podem estar vazios.
 
-Copie o `id` obtido na criação e substitua `<ID_DO_PEDIDO>` no comando:
+### Consultar um pedido
 
-```bash
-curl -i "http://127.0.0.1:8000/pedidos/<ID_DO_PEDIDO>"
+**Requisição:**
+
+```http
+GET /pedidos/{pedido_id}
 ```
 
-**HTTP 200:** retorna o mesmo JSON do pedido criado, com os campos `id`, `cliente`, `descricao`, `valor` e `status`.
+**Exemplo:**
 
-**HTTP 404:** ao consultar um UUID que não esteja na memória:
+```http
+GET /pedidos/ab57e469-70cd-40f1-a940-2fc017e27045
+```
+
+**Resposta — HTTP 200 OK:**
+
+```json
+{
+  "cliente": "Maria Silva",
+  "descricao": "Teclado mecânico",
+  "valor": 249.9,
+  "id": "ab57e469-70cd-40f1-a940-2fc017e27045",
+  "status": "CRIADO"
+}
+```
+
+### Tratamento de erros
+
+Caso o pedido não exista, a API retorna:
+
+**HTTP 404 Not Found**
 
 ```json
 {
@@ -117,98 +182,191 @@ curl -i "http://127.0.0.1:8000/pedidos/<ID_DO_PEDIDO>"
 }
 ```
 
-**HTTP 422:** ao enviar dados inválidos para a criação, a API retorna um JSON com `detail` descrevendo os campos que não passaram na validação.
+Dados inválidos retornam HTTP 422, com detalhes sobre os campos que não passaram na validação.
 
-Amostras das chamadas executadas de verdade estão em [`docs/evidencias/respostas.json`](docs/evidencias/respostas.json).
+Exemplos adicionais de respostas estão disponíveis em `docs/evidencias/respostas.json`.
+
+---
 
 ## Arquitetura e System Design
 
+A aplicação foi organizada em camadas para separar as responsabilidades de cada componente.
+
 ```mermaid
-flowchart LR
-    Cliente[Cliente HTTP / JSON] --> API[FastAPI - app/main.py]
-    API --> Servico[Regras de negócio - app/service.py]
-    Servico --> Repo[Repositório - app/repository.py]
-    Repo --> Memoria[(Dicionário em memória)]
-    API --> Esquemas[Validação JSON - app/schemas.py]
-    API --> Logs[Logs JSON - app/observability.py]
+flowchart TD
+    A["Cliente HTTP / JSON"] --> B["API REST - FastAPI"]
+    B --> C["Validação - Pydantic"]
+    B --> D["Camada de Serviço"]
+    D --> E["Repositório"]
+    E --> F[("Armazenamento em Memória")]
+    B --> G["Logs Estruturados JSON"]
 ```
 
-**Responsabilidades dos componentes:**
+### Responsabilidades dos componentes
 
-1. **Entrada HTTP (`app/main.py`):** expõe as rotas REST, lê e devolve JSON, trata resposta `404` e atribui `X-Request-ID`.
-2. **Contratos (`app/schemas.py`):** valida os campos de entrada e define o modelo de resposta, incluindo o status `CRIADO`.
-3. **Serviço (`app/service.py`):** gera o UUID do pedido, define seu status inicial e coordena salvamento e consulta.
-4. **Repositório (`app/repository.py`):** mantém os pedidos em um dicionário Python, sem persistência externa.
-5. **Observabilidade (`app/observability.py`):** produz um evento JSON por criação ou consulta e registra consultas inexistentes como `WARNING`.
+**1. Camada HTTP — `app/main.py`**
 
-Esse diagrama é renderizado automaticamente pelo GitHub no README; não depende de ferramentas externas.
+Responsável por receber as requisições, disponibilizar os endpoints REST, retornar respostas JSON e controlar os códigos HTTP.
 
-## Testes automatizados — evidência de execução
+**2. Modelos — `app/schemas.py`**
 
-Execute na raiz do projeto:
+Define a estrutura dos pedidos e realiza a validação dos dados utilizando Pydantic.
+
+**3. Serviço — `app/service.py`**
+
+Contém as regras de negócio, gera os identificadores únicos e coordena a criação e a consulta dos pedidos.
+
+**4. Repositório — `app/repository.py`**
+
+Responsável pelo armazenamento e pela recuperação dos pedidos utilizando um dicionário Python em memória.
+
+**5. Observabilidade — `app/observability.py`**
+
+Responsável pela geração dos logs estruturados em JSON, registrando as operações realizadas pela API.
+
+### Persistência dos dados
+
+Os pedidos são armazenados em memória durante a execução da aplicação.
+
+Quando o servidor é reiniciado, os dados são perdidos. Esse comportamento atende ao requisito do checkpoint de não utilizar um banco de dados externo.
+
+---
+
+## Documentação OpenAPI / Swagger
+
+A API possui documentação OpenAPI, permitindo consultar os endpoints, os modelos de dados e os possíveis códigos de resposta.
+
+A documentação pode ser acessada por meio do Swagger UI:
+
+**http://127.0.0.1:8000/docs**
+
+Também está disponível no arquivo:
+
+`docs/openapi.json`
+
+As duas operações obrigatórias estão documentadas:
+
+- `POST /pedidos`
+- `GET /pedidos/{pedido_id}`
+
+---
+
+## Testes automatizados
+
+Os testes foram implementados utilizando Pytest e FastAPI TestClient.
+
+### Executar os testes
+
+Na pasta raiz do projeto:
 
 ```bash
 python -m pytest -q
 ```
 
-Casos implementados em [`tests/test_pedidos.py`](tests/test_pedidos.py): criação com HTTP 201 e dados corretos; consulta de pedido existente com HTTP 200; consulta inexistente com HTTP 404; validação de entrada com HTTP 422; e formatação de um log JSON com identificador de requisição e pedido.
+### Cenários testados
 
-**Resultado obtido na execução do projeto:**
+1. Criação de pedido com sucesso — HTTP 201.
+2. Consulta de pedido existente — HTTP 200.
+3. Consulta de pedido inexistente — HTTP 404.
+4. Validação de dados inválidos — HTTP 422.
+5. Verificação da estrutura de um log JSON.
+
+### Evidência de execução
+
+Resultado registrado na execução do projeto:
 
 ```text
 .....                                                                    [100%]
 5 passed in 0.30s
 ```
 
-A saída foi preservada em [`docs/evidencias/testes.txt`](docs/evidencias/testes.txt).
+Os testes estão implementados em:
 
-## Observabilidade — logs estruturados
+`tests/test_pedidos.py`
 
-Os logs são produzidos no terminal que executa a aplicação e possuem `timestamp` UTC, `level`, `operacao`, `mensagem`, `requestId` e `pedidoId`. A ausência de pedido gera `WARNING` com o mesmo padrão JSON. Não há dependência de ferramenta externa de observabilidade.
+A evidência da execução está disponível em:
 
-**Exemplo real produzido na execução da API:**
+`docs/evidencias/testes.txt`
+
+---
+
+## Observabilidade — Logs estruturados
+
+A API implementa logs estruturados em formato JSON para registrar operações importantes.
+
+Cada registro contém:
+
+- `timestamp` — Data e hora da operação
+- `level` — Nível do log
+- `operacao` — Operação executada
+- `mensagem` — Descrição do evento
+- `requestId` — Identificador da requisição
+- `pedidoId` — Identificador do pedido
+
+### Exemplo de log
 
 ```json
-{"timestamp": "2026-10-22T00:39:01.890Z", "level": "INFO", "operacao": "criar_pedido", "mensagem": "Pedido criado com sucesso", "requestId": "cd46b592-62be-416f-9614-a4a2ae4e394d", "pedidoId": "ab57e469-70cd-40f1-a940-2fc017e27045"}
+{
+  "timestamp": "2026-10-22T00:39:01.890Z",
+  "level": "INFO",
+  "operacao": "criar_pedido",
+  "mensagem": "Pedido criado com sucesso",
+  "requestId": "cd46b592-62be-416f-9614-a4a2ae4e394d",
+  "pedidoId": "ab57e469-70cd-40f1-a940-2fc017e27045"
+}
 ```
 
-**Evidência completa de criação, consulta com sucesso e consulta sem resultado:** [`docs/evidencias/logs.jsonl`](docs/evidencias/logs.jsonl). Cada linha desse arquivo é um objeto JSON independente. Para reproduzir, inicie a API e faça as chamadas da seção de exemplos.
+Operações de consulta a pedidos inexistentes são registradas com nível `WARNING`.
 
-## Estrutura do repositório
+As evidências estão disponíveis em:
+
+`docs/evidencias/logs.jsonl`
+
+---
+
+## Estrutura do projeto
 
 ```text
 cp5-soa-pedidos/
+│
 ├── app/
 │   ├── __init__.py
-│   ├── main.py             # Rotas REST e middleware do request ID
-│   ├── schemas.py          # Modelos de entrada e saída
-│   ├── service.py          # Regras de negócio
-│   ├── repository.py       # Dicionário de pedidos em memória
-│   └── observability.py    # Logs em JSON
+│   ├── main.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── observability.py
+│
 ├── tests/
-│   └── test_pedidos.py     # 5 testes automatizados
+│   └── test_pedidos.py
+│
 ├── docs/
-│   ├── openapi.json        # Documentação OpenAPI gerada
+│   ├── openapi.json
 │   └── evidencias/
-│       ├── testes.txt      # Resultado real do Pytest
-│       ├── logs.jsonl      # Eventos reais gerados pela API
-│       └── respostas.json  # Respostas reais HTTP/JSON
+│       ├── testes.txt
+│       ├── logs.jsonl
+│       └── respostas.json
+│
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## Verificação dos critérios do CP5
+---
 
-| Critério | Entrega correspondente | Pontos previstos |
-| --- | --- | ---: |
-| Arquitetura e System Design | Diagrama Mermaid e descrição dos componentes neste README | 2,0 |
-| OpenAPI / Swagger | `docs/openapi.json` e `/docs` | 2,0 |
-| Implementação da API | `POST /pedidos` e `GET /pedidos/{pedido_id}` | 2,0 |
-| Teste automatizado | `tests/test_pedidos.py` e `docs/evidencias/testes.txt` | 2,0 |
-| Observabilidade | `app/observability.py` e `docs/evidencias/logs.jsonl` | 2,0 |
-| **Total possível** | **Todos os itens exigidos estão contemplados** | **10,0** |
+## Critérios de avaliação — CP5
 
-**Entrega:** publique a pasta do projeto em um repositório público no GitHub e envie o link na atividade da disciplina. Os **10,0 pontos** são o valor total da rubrica, não uma nota garantida.
-#   c p 5 - s o a  
- 
+| Critério | Implementação | Pontuação |
+|---|---|---|
+| Arquitetura e System Design | Diagrama Mermaid e separação em camadas | 2,0 |
+| OpenAPI / Swagger | Documentação dos endpoints | 2,0 |
+| Implementação da API | Criação e consulta de pedidos | 2,0 |
+| Testes automatizados | Pytest com evidência de execução | 2,0 |
+| Observabilidade | Logs estruturados em JSON | 2,0 |
+| **Total possível** | **5 critérios contemplados** | **10,0** |
+
+## Entrega
+
+O projeto deve ser disponibilizado em um repositório público no GitHub, contendo o código-fonte, a documentação, os testes automatizados e as evidências de execução.
+
+**FIAP — Engenharia de Software — 2026**
